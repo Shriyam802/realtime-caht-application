@@ -4,17 +4,35 @@ import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
     try {
+        console.log('Received registration request:', req.body);
         const { fullName, username, password, confirmPassword, gender } = req.body;
+        
+        // Detailed validation logging
+        if (!fullName) console.log('Missing fullName');
+        if (!username) console.log('Missing username');
+        if (!password) console.log('Missing password');
+        if (!confirmPassword) console.log('Missing confirmPassword');
+        if (!gender) console.log('Missing gender');
+
         if (!fullName || !username || !password || !confirmPassword || !gender) {
-            return res.status(400).json({ message: "All fields are required" });
+            return res.status(400).json({ 
+                message: "All fields are required",
+                missingFields: {
+                    fullName: !fullName,
+                    username: !username,
+                    password: !password,
+                    confirmPassword: !confirmPassword,
+                    gender: !gender
+                }
+            });
         }
         if (password !== confirmPassword) {
-            return res.status(400).json({ message: "Password do not match" });
+            return res.status(400).json({ message: "Passwords do not match" });
         }
 
         const user = await User.findOne({ username });
         if (user) {
-            return res.status(400).json({ message: "Username already exit try different" });
+            return res.status(400).json({ message: "Username already exists. Try a different username." });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -22,19 +40,34 @@ export const register = async (req, res) => {
         const maleProfilePhoto = `https://avatar.iran.liara.run/public/boy?username=${username}`;
         const femaleProfilePhoto = `https://avatar.iran.liara.run/public/girl?username=${username}`;
 
-        await User.create({
+        const newUser = await User.create({
             fullName,
             username,
             password: hashedPassword,
             profilePhoto: gender === "male" ? maleProfilePhoto : femaleProfilePhoto,
             gender
         });
+        
+        console.log('User registered successfully:', newUser._id);
+        
         return res.status(201).json({
             message: "Account created successfully.",
-            success: true
-        })
+            success: true,
+            user: {
+                _id: newUser._id,
+                fullName: newUser.fullName,
+                username: newUser.username,
+                profilePhoto: newUser.profilePhoto,
+                token: await jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' })
+            }
+        });
     } catch (error) {
-        console.log(error);
+        console.error("Registration error:", error);
+        return res.status(500).json({ 
+            message: "Error registering user", 
+            error: error.message,
+            success: false 
+        });
     }
 };
 export const login = async (req, res) => {
@@ -74,15 +107,30 @@ export const login = async (req, res) => {
         console.log(error);
     }
 }
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
     try {
-        return res.status(200).cookie("token", "", { maxAge: 0 }).json({
-            message: "logged out successfully."
-        })
+        // Clear JWT cookie
+        res.cookie('jwt', '', { 
+            httpOnly: true, 
+            expires: new Date(0),
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict'
+        });
+
+        // Update user's online status
+        if (req.user) {
+            await User.findByIdAndUpdate(req.user._id, { 
+                isOnline: false,
+                lastActiveAt: new Date() 
+            });
+        }
+
+        res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
-        console.log(error);
+        console.error('Logout error:', error);
+        res.status(500).json({ message: "Error during logout" });
     }
-}
+};
 export const getOtherUsers = async (req, res) => {
     try {
         const loggedInUserId = req.id;
@@ -90,5 +138,6 @@ export const getOtherUsers = async (req, res) => {
         return res.status(200).json(otherUsers);
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: "Error fetching users" });
     }
 }

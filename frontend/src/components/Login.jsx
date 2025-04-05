@@ -17,30 +17,69 @@ const Login = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
+     // console.log('Login request data:', user);
+     // console.log('Full login URL:', `${BASE_URL}/api/v1/user/login`);
+      
+      // Validate input
+      if (!user.username || !user.password) {
+        toast.error("Please enter username and password");
+        return;
+      }
+
       const res = await axios.post(`${BASE_URL}/api/v1/user/login`, user, {
         headers: {
           'Content-Type': 'application/json'
         },
-        withCredentials: true
+        withCredentials: true,
+        timeout: 10000 // 10 second timeout
       });
-      navigate("/");
-      console.log(res);
+
+      // More robust response checking
+      if (!res || !res.data) {
+        console.error('Invalid server response:', res);
+        toast.error('Invalid response from server');
+        return;
+      }
+
+      
+      // Dispatch user data and navigate
       dispatch(setAuthUser(res.data));
+      navigate("/");
+      toast.success("Login successful");
     } catch (error) {
-      toast.error(error.response.data.message);
-      console.log(error);
+      console.error('Login error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        config: error.config
+      });
+
+      // More detailed error handling
+      if (error.response) {
+        // Server responded with an error
+        toast.error(error.response.data.message || "Login failed");
+      } else if (error.request) {
+        // Request made but no response received
+        console.error('Request details:', error.request);
+        toast.error("No response from server. Check your connection and server status.");
+      } else {
+        // Something else went wrong
+        toast.error("An unexpected error occurred");
+      }
+    } finally {
+      // Reset form
+      setUser({
+        username: "",
+        password: ""
+      });
     }
-    setUser({
-      username: "",
-      password: ""
-    })
   }
+
   return (
     <div className="min-w-96 mx-auto">
       <div className='w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-10 border border-gray-100'>
         <h1 className='text-3xl font-bold text-center'>Login</h1>
         <form onSubmit={onSubmitHandler} action="">
-
           <div>
             <label className='label p-2'>
               <span className='text-base label-text'>Username</span>

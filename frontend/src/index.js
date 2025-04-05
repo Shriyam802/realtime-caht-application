@@ -10,6 +10,7 @@ import { persistStore } from 'redux-persist';
 
 let persistor = persistStore(store);
 
+// Updated to match backend port
 export const BASE_URL="http://localhost:8080"
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

@@ -22,6 +22,14 @@ const userModel = new mongoose.Schema({
         type:String,
         enum:["male", "female"],
         required:true
+    },
+    isOnline: {
+        type: Boolean,
+        default: false
+    },
+    lastActiveAt: {
+        type: Date,
+        default: null
     }
 }, {timestamps:true});
 export const User = mongoose.model("User", userModel);

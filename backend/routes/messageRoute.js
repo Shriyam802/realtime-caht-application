@@ -1,10 +1,17 @@
 import express from "express";
-import { getMessage, sendMessage } from "../controllers/messageController.js";
-import isAuthenticated from "../middleware/isAuthenticated.js";
+import { 
+    sendMessage, 
+    getMessage, 
+    deleteMessage 
+} from "../controllers/messageController.js";
+import protectRoute from "../middleware/protectRoute.js";
 
 const router = express.Router();
 
-router.route("/send/:id").post(isAuthenticated,sendMessage);
-router.route("/:id").get(isAuthenticated, getMessage);
+router.post("/send/:id", protectRoute, sendMessage);
+router.get("/:id", protectRoute, getMessage);
+
+// New route to delete a specific message
+router.delete("/:messageId", protectRoute, deleteMessage);
 
 export default router;
