@@ -64,7 +64,8 @@ const SendInput = () => {
                 { message: message.trim() }, 
                 {
                     headers: {
-                        'Content-Type': 'Bearer ${authUser.token}'
+                         'Content-Type': 'application/json',
+  Authorization: `Bearer ${authUser.token}` 
                     },
                     withCredentials: true
                 }
