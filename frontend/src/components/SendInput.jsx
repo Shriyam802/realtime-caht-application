@@ -64,12 +64,12 @@ const SendInput = () => {
                 { message: message.trim() }, 
                 {
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'Bearer ${authUser.token}'
                     },
                     withCredentials: true
                 }
             );
-            console.log("Authorization Header:", req.headers.authorization);
+         
 
             // More robust response checking
             if (!res || !res.data) {
