@@ -69,6 +69,7 @@ const SendInput = () => {
                     withCredentials: true
                 }
             );
+            console.log("Authorization Header:", req.headers.authorization);
 
             // More robust response checking
             if (!res || !res.data) {
