@@ -5,8 +5,8 @@ import { User } from "../models/userModel.js";
 
 export const sendMessage = async (req,res) => {
     try {
-        const senderId = req.id;
-        const receiverId = req.params.id;
+        const senderId = mongoose.Types.ObjectId(req.id);
+        const receiverId = mongoose.Types.ObjectId(req.params.id);
         const {message} = req.body;
 
         if (!message) {
