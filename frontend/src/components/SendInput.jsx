@@ -65,7 +65,7 @@ const SendInput = () => {
                 {
                     headers: {
                          'Content-Type': 'application/json',
-  Authorization: `Bearer ${authUser.token}` 
+
                     },
                     withCredentials: true
                 }
