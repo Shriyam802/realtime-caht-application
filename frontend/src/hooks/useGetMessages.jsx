@@ -14,7 +14,7 @@ const useGetMessages = () => {
                 const res = await axios.get(`${BASE_URL}/api/v1/message/${selectedUser?._id}`  , {
                           headers: {
                               'Content-Type': 'application/json',
-            Authorization: `Bearer ${authUser.token}`  // ✅ This is critical
+            
           },
           withCredentials: true
                 });
