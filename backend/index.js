@@ -24,18 +24,9 @@ app.use(cookieParser());
 const corsOption = {
     origin: function (origin, callback) {
         const allowedOrigins = [
-            'http://localhost:3000', 
-            'http://localhost:3001', 
-            'http://localhost:3002', 
-            'http://localhost:3003', 
-            'http://localhost:3004', 
-            'http://localhost:3007',
-            'http://localhost:8080',
-            'http://localhost:8081',
-            'http://localhost:8082',
-            'http://localhost:8083',
-            'https://realtime-caht-application-y6cm.vercel.app',
-            undefined // Allow undefined origin (for local development)
+           
+            'https://realtime-caht-application-cb62.vercel.app',
+          
         ];
         
         // Always allow localhost origins
