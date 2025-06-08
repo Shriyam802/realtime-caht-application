@@ -11,7 +11,7 @@ import { persistStore } from 'redux-persist';
 let persistor = persistStore(store);
 
 // Updated to match backend port
-export const BASE_URL="https://realtime-caht-application-2.onrender.com";
+export const BASE_URL="https://new-chat-2-gohs.onrender.com";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
