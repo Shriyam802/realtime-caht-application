@@ -34,6 +34,7 @@ const corsOption = {
             'http://localhost:8081',
             'http://localhost:8082',
             'http://localhost:8083',
+            'https://realtime-caht-application-y6cm.vercel.app/login',
             undefined // Allow undefined origin (for local development)
         ];
         
